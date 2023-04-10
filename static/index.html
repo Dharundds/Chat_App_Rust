@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatApp</title>
+</head>
+
+<body>
+    <form>
+        <label>
+            Type Your Username: <input type="text" id="username" name="username" placeholder="Type here..">
+        </label>
+        <label>
+            Type Your Message: <input type="text" id="msg" name="message" placeholder="Type here..">
+        </label>
+        <button onclick="send(event)">Send</button>
+    </form>
+
+    <script>
+        const form = document.querySelector("form");
+        const input = document.querySelector("#msg");
+        const user = document.querySelector("#username");
+        const button = document.querySelector("button");
+
+        const events = new EventSource('/events');
+        events.addEventListener("message", (event) => {
+            console.log(JSON.parse(event.data))
+        })
+
+        function send(e) {
+            e.preventDefault()
+            let room = "lobby";
+            let username = user.value;
+            let message = input.value
+            fetch("/message", {
+                method: "POST",
+                body: new URLSearchParams({ room, username, message })
+            }).then((res) => {
+                if (res.ok) console.log("Posted");
+            })
+        }
+
+    </script>
+</body>
+
+</html>
